@@ -43,11 +43,12 @@ also fails as a "sibling tool call errored" cascading failure.
 
 **Fix**:
 ```bash
-# Add to ~/.zshrc:
-source ~/claude-mcp-turbo/config/env.sh 2>/dev/null
+# setup.sh가 자동으로 셸 RC 파일에 등록합니다 (zsh/bash 자동 감지)
+# 수동 등록이 필요하면:
+source /path/to/claude-mcp-turbo/config/env.sh 2>/dev/null
 
-# Reload:
-source ~/.zshrc
+# 현재 셸에 반영:
+source ~/.zshrc  # 또는 ~/.bashrc
 ```
 
 ### 6. .omc-config.json has useMcp: false
@@ -66,17 +67,20 @@ bin/setup.sh
 ## Diagnostic Commands
 
 ```bash
+# clone 디렉토리에서 실행 (또는 절대 경로 사용)
+cd /path/to/claude-mcp-turbo
+
 # Full health check
-~/claude-mcp-turbo/bin/doctor.sh
+bin/doctor.sh
 
 # Usage dashboard
-~/claude-mcp-turbo/bin/status.sh
+bin/status.sh
 
 # Re-apply everything
-~/claude-mcp-turbo/bin/setup.sh
+bin/setup.sh
 
 # Just re-apply patches
-~/claude-mcp-turbo/bin/patch-omc.sh
+bin/patch-omc.sh
 ```
 
 ## Verifying Fixes

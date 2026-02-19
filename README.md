@@ -9,11 +9,15 @@ OMC v4.2.15에서 Codex/Gemini MCP 호출 시:
 - **Gemini 에러**: Codex 실패의 연쇄 에러 (sibling tool call errored)
 - **MCP 미활용**: `useMcp: false` 설정으로 자동 라우팅 비활성
 
-## 해결
+## 설치
 
 ```bash
-# 원커맨드 설치
-~/claude-mcp-turbo/bin/setup.sh
+# 원하는 위치에 clone
+git clone https://github.com/hyunseok-blue/claude-mcp-turbo.git
+cd claude-mcp-turbo
+
+# 원커맨드 설치 (경로 자동 감지, zsh/bash 자동 감지)
+bin/setup.sh
 ```
 
 이 스크립트가 하는 일:
@@ -50,11 +54,11 @@ claude-mcp-turbo/
 ## 일상 사용
 
 ```bash
-# 진단
-~/claude-mcp-turbo/bin/doctor.sh
+# 진단 (clone 디렉토리에서)
+bin/doctor.sh
 
 # 상태 확인
-~/claude-mcp-turbo/bin/status.sh
+bin/status.sh
 ```
 
 > **자동 패치**: `setup.sh` 실행 후에는 OMC가 업데이트되어도 Claude Code 시작 시 자동으로 패치가 적용됩니다. 수동 패치(`patch-omc.sh`)는 더 이상 필요하지 않습니다.

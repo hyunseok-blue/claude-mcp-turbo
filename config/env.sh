@@ -1,7 +1,7 @@
 #!/bin/bash
 # Claude MCP Turbo - Environment Variables
 # Codex Pro Max ($200/month) optimized settings
-# Source this file in ~/.zshrc: source ~/claude-mcp-turbo/config/env.sh
+# Source this file in your shell RC: source /path/to/claude-mcp-turbo/config/env.sh
 
 # ═══════════════════════════════════════════════════
 # Codex Pro Max - Aggressive settings (high rate limit)

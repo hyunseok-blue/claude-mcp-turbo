@@ -193,6 +193,6 @@ if [ $FAIL_COUNT -eq 0 ] && [ $WARN_COUNT -eq 0 ]; then
 elif [ $FAIL_COUNT -eq 0 ]; then
   echo -e "  ${YELLOW}Working with warnings. Review WARN items above.${NC}"
 else
-  echo -e "  ${RED}Issues found. Run: ~/claude-mcp-turbo/bin/setup.sh${NC}"
+  echo -e "  ${RED}Issues found. Run: $REPO_DIR/bin/setup.sh${NC}"
 fi
 echo "═══════════════════════════════════════════════════"

@@ -20,15 +20,22 @@ echo
 
 # ─── Step 1: Environment Variables ───────────────
 echo -e "${BLUE}[1/6] Setting up environment variables...${NC}"
-ZSHRC="$HOME/.zshrc"
-SOURCE_LINE="source ~/claude-mcp-turbo/config/env.sh 2>/dev/null"
-if grep -q "claude-mcp-turbo/config/env.sh" "$ZSHRC" 2>/dev/null; then
-  ok "env.sh already sourced in .zshrc"
+# Detect shell RC file
+if [ -n "${ZSH_VERSION:-}" ] || [ "$(basename "${SHELL:-}")" = "zsh" ]; then
+  SHELL_RC="$HOME/.zshrc"
+elif [ -n "${BASH_VERSION:-}" ] || [ "$(basename "${SHELL:-}")" = "bash" ]; then
+  SHELL_RC="$HOME/.bashrc"
 else
-  echo "" >> "$ZSHRC"
-  echo "# Claude MCP Turbo - Codex/Gemini 환경변수 (Pro Max 최적화)" >> "$ZSHRC"
-  echo "$SOURCE_LINE" >> "$ZSHRC"
-  ok "Added env.sh to .zshrc"
+  SHELL_RC="$HOME/.profile"
+fi
+SOURCE_LINE="source \"$REPO_DIR/config/env.sh\" 2>/dev/null"
+if grep -q "$REPO_DIR/config/env.sh" "$SHELL_RC" 2>/dev/null; then
+  ok "env.sh already sourced in $(basename "$SHELL_RC")"
+else
+  echo "" >> "$SHELL_RC"
+  echo "# Claude MCP Turbo - Codex/Gemini 환경변수 (Pro Max 최적화)" >> "$SHELL_RC"
+  echo "$SOURCE_LINE" >> "$SHELL_RC"
+  ok "Added env.sh to $(basename "$SHELL_RC")"
 fi
 # Source for current session
 source "$REPO_DIR/config/env.sh"
@@ -91,7 +98,7 @@ bash "$SCRIPT_DIR/patch-omc.sh"
 echo -e "${BLUE}[5/6] Registering auto-patch SessionStart hook...${NC}"
 chmod +x "$SCRIPT_DIR/auto-patch-check.sh"
 SETTINGS_JSON="$HOME/.claude/settings.json"
-HOOK_CMD="$HOME/claude-mcp-turbo/bin/auto-patch-check.sh"
+HOOK_CMD="$REPO_DIR/bin/auto-patch-check.sh"
 
 if [ -f "$SETTINGS_JSON" ]; then
   if grep -q 'auto-patch-check' "$SETTINGS_JSON" 2>/dev/null; then
@@ -153,4 +160,4 @@ bash "$SCRIPT_DIR/doctor.sh"
 
 echo
 ok "Setup complete! Restart Claude Code to apply all changes."
-echo "  Run 'source ~/.zshrc' to load env vars in current shell."
+echo "  Run 'source $SHELL_RC' to load env vars in current shell."
