@@ -1,0 +1,18 @@
+{
+  "description": "Role-to-provider routing rules for MCP-first policy",
+  "codex_roles": [
+    "architect", "planner", "critic", "analyst",
+    "code-reviewer", "security-reviewer", "tdd-guide"
+  ],
+  "gemini_roles": [
+    "designer", "writer", "vision"
+  ],
+  "claude_only_roles": [
+    "executor", "deep-executor", "explore", "debugger", "verifier",
+    "dependency-expert", "scientist", "build-fixer", "qa-tester", "git-master",
+    "style-reviewer", "quality-reviewer", "api-reviewer", "performance-reviewer",
+    "product-manager", "ux-researcher", "information-architect", "product-analyst",
+    "test-engineer", "quality-strategist"
+  ],
+  "routing_logic": "codex_roles -> ask_codex, gemini_roles -> ask_gemini, claude_only_roles -> Claude agent (needs tool access)"
+}

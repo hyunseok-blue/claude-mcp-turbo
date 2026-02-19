@@ -1,0 +1,50 @@
+--- a/src/mcp/codex-core.ts
++++ b/src/mcp/codex-core.ts
+@@ -118,23 +118,22 @@
+ export function isRateLimitError(output: string, stderr: string = ''): { isError: boolean; message: string } {
+-  const combined = `${output}\n${stderr}`;
+-  // Check for 429 status codes and rate limit messages in both stdout and stderr
+-  if (/429|rate.?limit|too many requests|quota.?exceeded|resource.?exhausted/i.test(combined)) {
+-    // Extract a meaningful message
+-    const lines = combined.split('\n').filter(l => l.trim());
+-    for (const line of lines) {
+-      try {
+-        const event = JSON.parse(line);
+-        const msg = typeof event.message === 'string' ? event.message :
+-                    typeof event.error?.message === 'string' ? event.error.message : '';
+-        if (/429|rate.?limit|too many requests|quota.?exceeded|resource.?exhausted/i.test(msg)) {
+-          return { isError: true, message: msg };
+-        }
+-      } catch { /* check raw line */ }
+-      if (/429|rate.?limit|too many requests|quota.?exceeded|resource.?exhausted/i.test(line)) {
+-        return { isError: true, message: line.trim() };
++  const RATE_LIMIT_RE = /429|rate[- ]limit|too many requests|quota[._-]exceeded|resource[._-]exhausted/i;
++  const lines = `${output}\n${stderr}`.split('\n').filter(l => l.trim());
++  for (const line of lines) {
++    try {
++      const event = JSON.parse(line);
++      // Only inspect error-type events — skip content events (item.completed, message, output_text)
++      // to avoid false positives from rate_limit variable names in response text
++      if (event.type !== 'error' && event.type !== 'turn.failed') {
++        continue;
+       }
++      const msg = typeof event.message === 'string' ? event.message :
++                  typeof event.error?.message === 'string' ? event.error.message : '';
++      if (RATE_LIMIT_RE.test(msg)) {
++        return { isError: true, message: msg };
++      }
++    } catch {
++      // Non-JSON line (typically stderr) — check with tighter regex
++      if (RATE_LIMIT_RE.test(line)) {
++        return { isError: true, message: line.trim() };
++      }
+     }
+-    return { isError: true, message: 'Rate limit error detected' };
+   }
+   return { isError: false, message: '' };
+ }
+
+Also replace all occurrences of:
+  rate.?limit        → rate[- ]limit
+  quota.?exceeded    → quota[._-]exceeded
+  resource.?exhausted → resource[._-]exhausted

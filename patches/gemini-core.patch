@@ -1,0 +1,23 @@
+--- a/src/mcp/gemini-core.ts
++++ b/src/mcp/gemini-core.ts
+@@ -67,14 +67,16 @@
+ export function isGeminiRetryableError(stdout: string, stderr: string = ''): { ... } {
+-  const combined = `${stdout}\n${stderr}`;
++  // Check stderr first (where real errors go), then stdout.
++  // Tighter regexes to avoid false positives from response content.
++  const combined = `${stderr}\n${stdout}`;
+   // Check for model not found / not supported (unchanged)
+   ...
+   // Check for 429/rate limit errors — use rate[- ]limit to exclude snake_case
+-  if (/429|rate.?limit|too many requests|quota.?exceeded|resource.?exhausted/i.test(combined)) {
+-    const match = combined.match(/.*(?:429|rate.?limit|too many requests|quota.?exceeded|resource.?exhausted).*/i);
++  const RATE_LIMIT_RE = /429|rate[- ]limit|too many requests|quota[._-]exceeded|resource[._-]exhausted/i;
++  if (RATE_LIMIT_RE.test(combined)) {
++    const match = combined.match(/.*(?:429|rate[- ]limit|too many requests|quota[._-]exceeded|resource[._-]exhausted).*/i);
+     return { isError: true, message: match?.[0]?.trim() || 'Rate limit error detected', type: 'rate_limit' };
+   }
+
+Also replace all occurrences of:
+  rate.?limit        → rate[- ]limit
+  quota.?exceeded    → quota[._-]exceeded
+  resource.?exhausted → resource[._-]exhausted

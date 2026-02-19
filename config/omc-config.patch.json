@@ -1,0 +1,29 @@
+{
+  "taskToolConfig": {
+    "injectInstructions": true,
+    "useMcp": true
+  },
+  "externalModels": {
+    "defaults": {
+      "provider": "codex",
+      "codexModel": "gpt-5.3-codex",
+      "geminiModel": "gemini-3-pro-preview"
+    },
+    "rolePreferences": {
+      "architect": { "provider": "codex" },
+      "planner": { "provider": "codex" },
+      "critic": { "provider": "codex" },
+      "analyst": { "provider": "codex" },
+      "code-reviewer": { "provider": "codex" },
+      "security-reviewer": { "provider": "codex" },
+      "tdd-guide": { "provider": "codex" },
+      "designer": { "provider": "gemini" },
+      "writer": { "provider": "gemini" },
+      "vision": { "provider": "gemini" }
+    },
+    "fallbackPolicy": {
+      "onModelFailure": "provider_chain",
+      "allowCrossProvider": true
+    }
+  }
+}
