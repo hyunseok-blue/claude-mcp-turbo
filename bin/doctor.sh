@@ -103,7 +103,16 @@ fi
 # ─── 6. Codex Test Call ──────────────────────────
 echo -e "${CYAN}[6/9] Codex Connectivity${NC}"
 if command -v codex &>/dev/null; then
-  if timeout 15 codex exec -m gpt-5.3-codex --json --full-auto <<< "Reply with just: OK" 2>/dev/null | grep -q '"type"'; then
+  # Run codex test with bash-native timeout (works on macOS)
+  CODEX_RESULT=""
+  CODEX_RESULT=$(bash -c 'echo "Reply with just: OK" | codex exec -m gpt-5.3-codex --json --full-auto 2>/dev/null' &
+    CODEX_PID=$!
+    sleep 20 && kill $CODEX_PID 2>/dev/null &
+    TIMER_PID=$!
+    wait $CODEX_PID 2>/dev/null
+    kill $TIMER_PID 2>/dev/null
+  ) 2>/dev/null
+  if echo "$CODEX_RESULT" | grep -q '"type"'; then
     check_pass "Codex API responding"
   else
     check_warn "Codex API test inconclusive (may need longer timeout)"
