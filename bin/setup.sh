@@ -104,14 +104,17 @@ settings_path = os.path.expanduser('$SETTINGS_JSON')
 with open(settings_path) as f:
     settings = json.load(f)
 
-# Ensure hooks.SessionStart exists
+# Ensure hooks.SessionStart exists (new matcher format)
 hooks = settings.setdefault('hooks', {})
 session_start = hooks.setdefault('SessionStart', [])
 
-# Add auto-patch-check hook
+# Add auto-patch-check hook with matcher format
 session_start.append({
-    'type': 'command',
-    'command': '$HOOK_CMD'
+    'matcher': {},
+    'hooks': [{
+        'type': 'command',
+        'command': '$HOOK_CMD'
+    }]
 })
 
 with open(settings_path, 'w') as f:
@@ -127,8 +130,11 @@ import json
 settings = {
     'hooks': {
         'SessionStart': [{
-            'type': 'command',
-            'command': '$HOOK_CMD'
+            'matcher': {},
+            'hooks': [{
+                'type': 'command',
+                'command': '$HOOK_CMD'
+            }]
         }]
     }
 }
