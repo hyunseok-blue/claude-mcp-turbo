@@ -117,7 +117,7 @@ session_start = hooks.setdefault('SessionStart', [])
 
 # Add auto-patch-check hook with matcher format
 session_start.append({
-    'matcher': {},
+    'matcher': '',
     'hooks': [{
         'type': 'command',
         'command': '$HOOK_CMD'
@@ -137,7 +137,7 @@ import json
 settings = {
     'hooks': {
         'SessionStart': [{
-            'matcher': {},
+            'matcher': '',
             'hooks': [{
                 'type': 'command',
                 'command': '$HOOK_CMD'
