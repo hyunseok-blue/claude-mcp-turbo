@@ -16,10 +16,24 @@
 | writer | ask_gemini | 문서 작성 |
 | vision | ask_gemini | 이미지/스크린샷 분석 |
 
+### Codex Reasoning Effort 자동 라우팅
+역할별로 `reasoning_effort` 파라미터를 자동 설정:
+
+| reasoning_effort | 역할 | 용도 |
+|-----------------|------|------|
+| `xhigh` | architect, security-reviewer | 아키텍처 설계, 보안 심층 분석 |
+| `high` | critic, analyst, code-reviewer | 비평, 요구사항 분석, 코드 리뷰 |
+| `medium` | planner, tdd-guide | 계획 검증, 테스트 전략 |
+| `low` | explore, writer | 탐색, 문서 작성 |
+
+`ask_codex` 호출 시 위 테이블에 따라 `reasoning_effort`를 반드시 설정할 것.
+매핑에 없는 역할은 `medium`을 기본값으로 사용.
+
 ### 실행 규칙
 1. 위 역할의 분석/리뷰 작업 → MCP 우선 호출 (background: true로 병렬)
 2. MCP 실패 시 → Claude 에이전트로 폴백
 3. 구현/디버깅/검증 등 도구 접근 필요 → Claude 에이전트 직접 사용
 4. 리뷰 작업 시 Codex + Claude 크로스 검증 적극 활용
 5. 대규모 파일 분석 → Gemini (1M 토큰 컨텍스트) 우선
+6. Codex 호출 시 역할별 reasoning_effort 자동 적용 (위 테이블 참조)
 </mcp_first_policy>

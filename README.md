@@ -39,7 +39,7 @@ claude-mcp-turbo/
 │   ├── env.sh            # 환경변수 (Pro Max 최적화)
 │   ├── omc-config.patch.json   # .omc-config.json 패치
 │   ├── model-routing.json      # 역할→프로바이더 라우팅
-│   └── claude-md-patch.md      # CLAUDE.md MCP-first 정책
+│   └── claude-md-patch.md      # CLAUDE.md MCP-first 정책 + reasoning effort 라우팅
 ├── patches/
 │   ├── codex-core.patch  # isRateLimitError 수정
 │   └── gemini-core.patch # isGeminiRetryableError 수정
@@ -58,6 +58,17 @@ claude-mcp-turbo/
 ```
 
 > **자동 패치**: `setup.sh` 실행 후에는 OMC가 업데이트되어도 Claude Code 시작 시 자동으로 패치가 적용됩니다. 수동 패치(`patch-omc.sh`)는 더 이상 필요하지 않습니다.
+
+## Codex Reasoning Effort 자동 라우팅
+
+Codex 호출 시 역할에 따라 `reasoning_effort`를 자동 설정:
+
+| Level | 역할 | 설명 |
+|-------|------|------|
+| `xhigh` | architect, security-reviewer | 깊은 추론 필요 |
+| `high` | critic, analyst, code-reviewer | 분석/리뷰 |
+| `medium` | planner, tdd-guide | 계획/전략 (기본값) |
+| `low` | explore, writer | 빠른 탐색/작성 |
 
 ## 버그 상세
 
