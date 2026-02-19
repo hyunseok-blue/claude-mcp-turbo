@@ -21,18 +21,20 @@ OMC v4.2.15에서 Codex/Gemini MCP 호출 시:
 2. `.omc-config.json` 업데이트 (`useMcp: true`, 역할별 프로바이더 라우팅)
 3. `CLAUDE.md`에 MCP-first 정책 추가
 4. OMC 버그 패치 적용
-5. 전체 진단 실행
+5. SessionStart 훅 등록 (OMC 업데이트 시 자동 패치)
+6. 전체 진단 실행
 
 ## 구조
 
 ```
 claude-mcp-turbo/
 ├── bin/
-│   ├── setup.sh          # 원커맨드 설치
-│   ├── doctor.sh         # 건강 진단 (8개 체크)
-│   ├── status.sh         # 사용 현황 대시보드
-│   ├── update.sh         # 설정 업데이트
-│   └── patch-omc.sh      # OMC 버그 패치 (업데이트 후 재실행)
+│   ├── setup.sh              # 원커맨드 설치
+│   ├── doctor.sh             # 건강 진단 (9개 체크)
+│   ├── status.sh             # 사용 현황 대시보드
+│   ├── update.sh             # 설정 업데이트
+│   ├── patch-omc.sh          # OMC 버그 패치
+│   └── auto-patch-check.sh   # SessionStart 훅 (자동 패치)
 ├── config/
 │   ├── env.sh            # 환경변수 (Pro Max 최적화)
 │   ├── omc-config.patch.json   # .omc-config.json 패치
@@ -53,10 +55,9 @@ claude-mcp-turbo/
 
 # 상태 확인
 ~/claude-mcp-turbo/bin/status.sh
-
-# OMC 업데이트 후 패치 재적용
-~/claude-mcp-turbo/bin/patch-omc.sh
 ```
+
+> **자동 패치**: `setup.sh` 실행 후에는 OMC가 업데이트되어도 Claude Code 시작 시 자동으로 패치가 적용됩니다. 수동 패치(`patch-omc.sh`)는 더 이상 필요하지 않습니다.
 
 ## 버그 상세
 

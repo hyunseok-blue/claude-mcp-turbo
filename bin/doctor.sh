@@ -27,7 +27,7 @@ echo "════════════════════════�
 echo
 
 # ─── 1. Codex CLI ────────────────────────────────
-echo -e "${CYAN}[1/8] Codex CLI${NC}"
+echo -e "${CYAN}[1/9] Codex CLI${NC}"
 if command -v codex &>/dev/null; then
   CODEX_VER=$(codex --version 2>/dev/null || echo "unknown")
   check_pass "Codex CLI installed ($CODEX_VER)"
@@ -36,7 +36,7 @@ else
 fi
 
 # ─── 2. Gemini CLI ───────────────────────────────
-echo -e "${CYAN}[2/8] Gemini CLI${NC}"
+echo -e "${CYAN}[2/9] Gemini CLI${NC}"
 if command -v gemini &>/dev/null; then
   check_pass "Gemini CLI installed"
 else
@@ -44,7 +44,7 @@ else
 fi
 
 # ─── 3. OMC Plugin ───────────────────────────────
-echo -e "${CYAN}[3/8] OMC Plugin${NC}"
+echo -e "${CYAN}[3/9] OMC Plugin${NC}"
 OMC_CACHE="$HOME/.claude/plugins/cache/omc/oh-my-claudecode"
 if [ -d "$OMC_CACHE" ]; then
   OMC_VER=$(ls -1d "$OMC_CACHE"/*/ 2>/dev/null | sort -V | tail -1 | xargs basename)
@@ -61,7 +61,7 @@ else
 fi
 
 # ─── 4. Environment Variables ────────────────────
-echo -e "${CYAN}[4/8] Environment Variables${NC}"
+echo -e "${CYAN}[4/9] Environment Variables${NC}"
 check_env() {
   local var="$1" expected="$2"
   local val="${!var:-}"
@@ -82,7 +82,7 @@ check_env "OMC_CODEX_RATE_LIMIT_INITIAL_DELAY" "2000"
 check_env "OMC_GEMINI_DEFAULT_MODEL" "gemini-3-pro-preview"
 
 # ─── 5. .omc-config.json ────────────────────────
-echo -e "${CYAN}[5/8] OMC Config${NC}"
+echo -e "${CYAN}[5/9] OMC Config${NC}"
 OMC_CONFIG="$HOME/.claude/.omc-config.json"
 if [ -f "$OMC_CONFIG" ]; then
   if grep -q '"useMcp": true' "$OMC_CONFIG" 2>/dev/null; then
@@ -101,7 +101,7 @@ else
 fi
 
 # ─── 6. Codex Test Call ──────────────────────────
-echo -e "${CYAN}[6/8] Codex Connectivity${NC}"
+echo -e "${CYAN}[6/9] Codex Connectivity${NC}"
 if command -v codex &>/dev/null; then
   if timeout 15 codex exec -m gpt-5.3-codex --json --full-auto <<< "Reply with just: OK" 2>/dev/null | grep -q '"type"'; then
     check_pass "Codex API responding"
@@ -113,7 +113,7 @@ else
 fi
 
 # ─── 7. Patch Status ────────────────────────────
-echo -e "${CYAN}[7/8] Patch Status${NC}"
+echo -e "${CYAN}[7/9] Patch Status${NC}"
 if [ -n "${OMC_DIR:-}" ] && [ -d "${OMC_DIR:-}" ]; then
   # Check codex-core.ts
   CODEX_SRC="$OMC_DIR/src/mcp/codex-core.ts"
@@ -149,7 +149,7 @@ else
 fi
 
 # ─── 8. CLAUDE.md MCP-First Policy ──────────────
-echo -e "${CYAN}[8/8] CLAUDE.md MCP-First Policy${NC}"
+echo -e "${CYAN}[8/9] CLAUDE.md MCP-First Policy${NC}"
 CLAUDE_MD="$HOME/.claude/CLAUDE.md"
 if [ -f "$CLAUDE_MD" ]; then
   if grep -q 'mcp_first_policy' "$CLAUDE_MD" 2>/dev/null; then
@@ -159,6 +159,19 @@ if [ -f "$CLAUDE_MD" ]; then
   fi
 else
   check_fail "CLAUDE.md not found"
+fi
+
+# ─── 9. Auto-Patch Hook ─────────────────────────
+echo -e "${CYAN}[9/9] Auto-Patch Hook${NC}"
+SETTINGS_JSON="$HOME/.claude/settings.json"
+if [ -f "$SETTINGS_JSON" ]; then
+  if grep -q 'auto-patch-check' "$SETTINGS_JSON" 2>/dev/null; then
+    check_pass "Auto-patch hook registered in settings.json"
+  else
+    check_warn "Auto-patch hook not registered (run: bin/setup.sh)"
+  fi
+else
+  check_warn "settings.json not found (auto-patch hook not registered)"
 fi
 
 # ─── Summary ─────────────────────────────────────

@@ -19,7 +19,7 @@ echo "════════════════════════�
 echo
 
 # ─── Step 1: Environment Variables ───────────────
-echo -e "${BLUE}[1/5] Setting up environment variables...${NC}"
+echo -e "${BLUE}[1/6] Setting up environment variables...${NC}"
 ZSHRC="$HOME/.zshrc"
 SOURCE_LINE="source ~/claude-mcp-turbo/config/env.sh 2>/dev/null"
 if grep -q "claude-mcp-turbo/config/env.sh" "$ZSHRC" 2>/dev/null; then
@@ -35,7 +35,7 @@ source "$REPO_DIR/config/env.sh"
 ok "Environment variables loaded"
 
 # ─── Step 2: .omc-config.json ───────────────────
-echo -e "${BLUE}[2/5] Updating .omc-config.json...${NC}"
+echo -e "${BLUE}[2/6] Updating .omc-config.json...${NC}"
 OMC_CONFIG="$HOME/.claude/.omc-config.json"
 if [ -f "$OMC_CONFIG" ]; then
   # Check if already configured
@@ -64,7 +64,7 @@ else
 fi
 
 # ─── Step 3: CLAUDE.md MCP-First Policy ─────────
-echo -e "${BLUE}[3/5] Checking CLAUDE.md MCP-first policy...${NC}"
+echo -e "${BLUE}[3/6] Checking CLAUDE.md MCP-first policy...${NC}"
 CLAUDE_MD="$HOME/.claude/CLAUDE.md"
 if [ -f "$CLAUDE_MD" ]; then
   if grep -q 'mcp_first_policy' "$CLAUDE_MD"; then
@@ -84,12 +84,64 @@ else
 fi
 
 # ─── Step 4: Apply OMC Patches ──────────────────
-echo -e "${BLUE}[4/5] Applying OMC bug patches...${NC}"
+echo -e "${BLUE}[4/6] Applying OMC bug patches...${NC}"
 bash "$SCRIPT_DIR/patch-omc.sh"
 
-# ─── Step 5: Verify ─────────────────────────────
+# ─── Step 5: Register Auto-Patch Hook ────────────
+echo -e "${BLUE}[5/6] Registering auto-patch SessionStart hook...${NC}"
+chmod +x "$SCRIPT_DIR/auto-patch-check.sh"
+SETTINGS_JSON="$HOME/.claude/settings.json"
+HOOK_CMD="$HOME/claude-mcp-turbo/bin/auto-patch-check.sh"
+
+if [ -f "$SETTINGS_JSON" ]; then
+  if grep -q 'auto-patch-check' "$SETTINGS_JSON" 2>/dev/null; then
+    ok "Auto-patch hook already registered"
+  else
+    python3 -c "
+import json, os, sys
+
+settings_path = os.path.expanduser('$SETTINGS_JSON')
+with open(settings_path) as f:
+    settings = json.load(f)
+
+# Ensure hooks.SessionStart exists
+hooks = settings.setdefault('hooks', {})
+session_start = hooks.setdefault('SessionStart', [])
+
+# Add auto-patch-check hook
+session_start.append({
+    'type': 'command',
+    'command': '$HOOK_CMD'
+})
+
+with open(settings_path, 'w') as f:
+    json.dump(settings, f, indent=2)
+    f.write('\n')
+print('done')
+" && ok "Auto-patch hook registered in settings.json" || warn "Failed to register hook (add manually)"
+  fi
+else
+  # Create settings.json with the hook
+  python3 -c "
+import json
+settings = {
+    'hooks': {
+        'SessionStart': [{
+            'type': 'command',
+            'command': '$HOOK_CMD'
+        }]
+    }
+}
+with open('$SETTINGS_JSON', 'w') as f:
+    json.dump(settings, f, indent=2)
+    f.write('\n')
+print('done')
+" && ok "Created settings.json with auto-patch hook" || warn "Failed to create settings.json"
+fi
+
+# ─── Step 6: Verify ─────────────────────────────
 echo
-echo -e "${BLUE}[5/5] Running diagnostics...${NC}"
+echo -e "${BLUE}[6/6] Running diagnostics...${NC}"
 echo
 bash "$SCRIPT_DIR/doctor.sh"
 
