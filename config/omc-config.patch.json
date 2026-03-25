@@ -3,12 +3,24 @@
     "injectInstructions": true,
     "useMcp": true
   },
+  "seriousMode": {
+    "enabled": false,
+    "description": "진심모드 - 필요시 수동 활성화 (/진심). 상시 활성화 시 토큰 3-5배 증가",
+    "tripleParallel": false,
+    "alwaysDispatchAll": false
+  },
+  "execution": {
+    "maxConcurrentAgents": 7,
+    "maxConcurrentMcp": 5,
+    "alwaysUseTripleDispatch": false
+  },
   "externalModels": {
     "defaults": {
       "provider": "codex",
       "codexModel": "gpt-5.3-codex",
       "geminiModel": "gemini-3-pro-preview"
     },
+    "usage": "on-demand",
     "rolePreferences": {
       "architect": { "provider": "codex" },
       "planner": { "provider": "codex" },

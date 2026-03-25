@@ -74,6 +74,22 @@ Codex 호출 시 역할에 따라 `reasoning_effort`를 자동 설정:
 | `medium` | planner, tdd-guide | 계획/전략 (기본값) |
 | `low` | explore, writer | 빠른 탐색/작성 |
 
+## 토큰 최적화 가이드
+
+진심모드(삼중 병렬)는 기본 비활성화로 변경되었습니다. 필요시 수동 활성화하세요.
+
+| 설정 | 기본값 | 토큰 영향 |
+|------|--------|-----------|
+| `seriousMode.enabled` | `false` | 삼중 디스패치 해제 → 비용 1/3~1/5 |
+| `execution.maxConcurrentAgents` | `7` | 과도한 병렬 방지 |
+| `execution.alwaysUseTripleDispatch` | `false` | 필요시만 삼중 실행 |
+| `externalModels.usage` | `on-demand` | MCP 필요시만 호출 |
+
+**CLAUDE.md 크기도 중요합니다.** 매 메시지마다 시스템 프롬프트가 재전송되므로:
+- CLAUDE.md는 8KB 이하 권장
+- `@파일` 참조는 해당 파일 전체가 포함됨 (COMMANDS.md 3KB + PERSONAS.md 5KB + SYSTEM.md 6KB = 14KB 추가)
+- 상세 에이전트 카탈로그, 스킬 목록 등은 OMC 플러그인이 자동 주입하므로 CLAUDE.md에 중복 불필요
+
 ## 버그 상세
 
 ### `rate.?limit` → `rate[- ]limit`
